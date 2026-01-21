@@ -77,7 +77,16 @@ class UnsplashScraper:
         options.add_argument(f"user-agent={config.USER_AGENT}")
         
         if headless:
-            options.add_argument("--headless")
+            options.add_argument("--headless=new")  # Use new headless mode
+            options.add_argument("--no-sandbox")
+            options.add_argument("--disable-dev-shm-usage")
+            options.add_argument("--disable-gpu")
+            options.add_argument("--window-size=1920,1080")
+        
+        # Additional options for stability
+        options.add_argument("--disable-blink-features=AutomationControlled")
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        options.add_experimental_option("useAutomationExtension", False)
             
         driver = webdriver.Chrome(options=options)
         
@@ -118,7 +127,7 @@ class UnsplashScraper:
             # Wait for images container to load
             images_container = self.wait.until(
                 EC.visibility_of_all_elements_located(
-                    (By.XPATH, config.SELECTORS["images_container"])
+                    (By.CSS_SELECTOR, config.SELECTORS["images_container"])
                 )
             )
             
@@ -132,7 +141,6 @@ class UnsplashScraper:
             
             # Extract image URLs
             image_urls = self._extract_image_urls(images_container[0])
-            
             # Trim to requested number
             if len(image_urls) > num_images:
                 image_urls = image_urls[:num_images]
@@ -160,10 +168,18 @@ class UnsplashScraper:
         columns = container.find_elements(By.XPATH, "./*")
         if not columns:
             return 0
-            
-        figures = columns[0].find_elements(By.XPATH, "./*")
-        # Unsplash uses 3 columns, so multiply by 3
-        return len(figures) * 3
+        count = 0    
+        for col_idx, column in enumerate(columns):
+            self.logger.debug(f"Processing column {col_idx + 1}/{len(columns)}")
+            figures = column.find_elements(By.XPATH, "./*")
+            for figure in figures:
+                try:
+                    div_child = figure.find_element(By.XPATH, "./*")
+                    if div_child.get_attribute("class") == config.SELECTORS["image_container_class"]:
+                        count += 1
+                except NoSuchElementException:
+                    continue
+        return count
     
     def _load_more_images(self, container, target_count: int) -> None:
         """
@@ -176,7 +192,7 @@ class UnsplashScraper:
         try:
             # Click "Load More" button if it exists
             load_more_btn = self.driver.find_element(
-                By.XPATH, 
+                By.CSS_SELECTOR, 
                 config.SELECTORS["load_more_button"]
             )
             self.driver.execute_script("arguments[0].scrollIntoView(true);", load_more_btn)
@@ -189,17 +205,14 @@ class UnsplashScraper:
         
         # Scroll to load more images
         current_count = self._count_current_images(container)
-        
         while current_count < target_count:
             self.driver.execute_script(f"window.scrollBy(0, {config.SCROLL_STEP});")
             time.sleep(config.SCROLL_PAUSE_TIME)
-            
             new_count = self._count_current_images(container)
-            
             # Break if no new images loaded
-            if new_count == current_count:
+            if new_count >= target_count:
                 self.logger.warning(
-                    f"Stopped at {current_count} images - no more available"
+                    f"Stopped at {new_count} images - no more needed"
                 )
                 break
                 
@@ -218,15 +231,12 @@ class UnsplashScraper:
         """
         image_urls = []
         columns = container.find_elements(By.XPATH, "./*")
-        
         for col_idx, column in enumerate(columns):
             self.logger.debug(f"Processing column {col_idx + 1}/{len(columns)}")
             figures = column.find_elements(By.XPATH, "./*")
-            
             for figure in figures:
                 try:
                     div_child = figure.find_element(By.XPATH, "./*")
-                    
                     # Check if this is an image container
                     if div_child.get_attribute("class") == config.SELECTORS["image_container_class"]:
                         # Navigate through the DOM structure
@@ -240,8 +250,7 @@ class UnsplashScraper:
                             
                 except NoSuchElementException:
                     # Skip elements that don't match expected structure
-                    continue
-                    
+                    continue       
         return image_urls
     
     def download_images(

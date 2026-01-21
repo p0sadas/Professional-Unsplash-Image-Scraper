@@ -100,25 +100,25 @@ You'll be prompted to enter:
 ### Command-Line Mode
 
 ```bash
-# Basic usage
+# Basic usage (runs in headless mode by default)
 python main.py -q "cats" -n 10
 
 # With custom output directory
 python main.py -q "nature" -n 25 -o "my_images"
 
-# Headless mode (no browser window)
-python main.py -q "technology" -n 15 --headless
+# Show browser window (disable headless mode)
+python main.py -q "technology" -n 15 --no-headless
 ```
 
 ### Available Arguments
 
-| Argument       | Short | Description                           | Required |
-| -------------- | ----- | ------------------------------------- | -------- |
-| `--query`      | `-q`  | Search query (e.g., 'cat', 'nature')  | No\*     |
-| `--num-images` | `-n`  | Number of images to download          | No\*     |
-| `--output`     | `-o`  | Output directory (default: downloads) | No       |
-| `--headless`   | -     | Run browser in headless mode          | No       |
-| `--help`       | `-h`  | Show help message                     | No       |
+| Argument        | Short | Description                               | Required |
+| --------------- | ----- | ----------------------------------------- | -------- |
+| `--query`       | `-q`  | Search query (e.g., 'cat', 'nature')      | No\*     |
+| `--num-images`  | `-n`  | Number of images to download              | No\*     |
+| `--output`      | `-o`  | Output directory (default: downloads)     | No       |
+| `--no-headless` | -     | Show browser window (headless is default) | No       |
+| `--help`        | `-h`  | Show help message                         | No       |
 
 \*If not provided, interactive mode will be used.
 
@@ -195,11 +195,11 @@ with UnsplashScraper(headless=True) as scraper:
 print(f"Downloaded {len(urls)} images!")
 ```
 
-### Example 3: Headless Mode for Automation
+### Example 3: Run with Browser Visible
 
 ```bash
-# Perfect for running on servers or in scripts
-python main.py -q "abstract art" -n 30 --headless
+# Show the browser window (useful for debugging)
+python main.py -q "abstract art" -n 30 --no-headless
 ```
 
 ## 🔍 Troubleshooting

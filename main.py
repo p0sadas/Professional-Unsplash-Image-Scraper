@@ -39,9 +39,9 @@ Examples:
     )
     
     parser.add_argument(
-        "--headless",
+        "--no-headless",
         action="store_true",
-        help="Run browser in headless mode (no GUI)"
+        help="Run browser with GUI (headless is default)"
     )
     
     parser.add_argument(
@@ -84,7 +84,9 @@ Examples:
     
     try:
         # Use context manager to ensure driver is closed
-        with UnsplashScraper(headless=args.headless) as scraper:
+        # Headless is default, unless --no-headless flag is used
+        headless_mode = not args.no_headless
+        with UnsplashScraper(headless=headless_mode) as scraper:
             # Scrape image URLs
             image_urls = scraper.scrape_images(args.query, args.num_images)
             

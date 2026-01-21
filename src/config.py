@@ -15,7 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DOWNLOAD_DIR = BASE_DIR / "downloads"
 
 # Selenium WebDriver settings
-WEBDRIVER_TIMEOUT = 20  # seconds
+WEBDRIVER_TIMEOUT = 30  # seconds (increased for slow page loads)
 SCROLL_PAUSE_TIME = 0.3  # seconds between scrolls
 SCROLL_STEP = 300  # pixels to scroll at a time
 
@@ -34,8 +34,8 @@ DEFAULT_SEARCH_URL = "https://unsplash.com/s/photos/{query}?license=free"
 
 # XPath selectors (can be updated if Unsplash changes their layout)
 SELECTORS = {
-    "images_container": "/html/body/div[2]/div/div/div/div[2]/div/div[3]/div[1]/div[1]/div[1]/div[3]/div/div",
-    "load_more_button": "/html/body/div[2]/div/div/div/div[2]/div/div[3]/div[6]/button",
+    "images_container": "div[data-testid='masonry-grid-count-three']",
+    "load_more_button": "div[class^='loadMoreButtonContainer-'] button",
     "image_container_class": "container-WSKyvi",
 }
 

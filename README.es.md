@@ -100,25 +100,25 @@ Se te pedirá que ingreses:
 ### Modo Línea de Comandos
 
 ```bash
-# Uso básico
+# Uso básico (se ejecuta en modo sin interfaz por defecto)
 python main.py -q "gatos" -n 10
 
 # Con directorio de salida personalizado
 python main.py -q "naturaleza" -n 25 -o "mis_imagenes"
 
-# Modo sin interfaz gráfica (headless)
-python main.py -q "tecnología" -n 15 --headless
+# Mostrar ventana del navegador (deshabilitar modo sin interfaz)
+python main.py -q "tecnología" -n 15 --no-headless
 ```
 
 ### Argumentos Disponibles
 
-| Argumento      | Abreviado | Descripción                                      | Requerido |
-| -------------- | --------- | ------------------------------------------------ | --------- |
-| `--query`      | `-q`      | Consulta de búsqueda (ej. 'gato', 'naturaleza')  | No\*      |
-| `--num-images` | `-n`      | Número de imágenes a descargar                   | No\*      |
-| `--output`     | `-o`      | Directorio de salida (predeterminado: downloads) | No        |
-| `--headless`   | -         | Ejecutar navegador en modo sin interfaz          | No        |
-| `--help`       | `-h`      | Mostrar mensaje de ayuda                         | No        |
+| Argumento       | Abreviado | Descripción                                              | Requerido |
+| --------------- | --------- | -------------------------------------------------------- | --------- |
+| `--query`       | `-q`      | Consulta de búsqueda (ej. 'gato', 'naturaleza')          | No\*      |
+| `--num-images`  | `-n`      | Número de imágenes a descargar                           | No\*      |
+| `--output`      | `-o`      | Directorio de salida (predeterminado: downloads)         | No        |
+| `--no-headless` | -         | Mostrar ventana del navegador (sin interfaz por defecto) | No        |
+| `--help`        | `-h`      | Mostrar mensaje de ayuda                                 | No        |
 
 \*Si no se proporcionan, se usará el modo interactivo.
 
@@ -195,11 +195,11 @@ with UnsplashScraper(headless=True) as scraper:
 print(f"¡Se descargaron {len(urls)} imágenes!")
 ```
 
-### Ejemplo 3: Modo Sin Interfaz para Automatización
+### Ejemplo 3: Ejecutar con Navegador Visible
 
 ```bash
-# Perfecto para ejecutar en servidores o en scripts
-python main.py -q "arte abstracto" -n 30 --headless
+# Mostrar la ventana del navegador (útil para depuración)
+python main.py -q "arte abstracto" -n 30 --no-headless
 ```
 
 ## 🔍 Solución de Problemas
